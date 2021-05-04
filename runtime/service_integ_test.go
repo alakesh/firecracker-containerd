@@ -1546,6 +1546,24 @@ func TestStopVM_Isolated(t *testing.T) {
 				}
 			},
 		},
+
+		{
+			name:       "SuccessfulPaused",
+			withStopVM: true,
+
+			createVMRequest: proto.CreateVMRequest{},
+			stopFunc: func(ctx context.Context, fcClient fccontrol.FirecrackerService, req proto.CreateVMRequest) {
+				_, err = fcClient.PauseVM(ctx, &proto.PauseVMRequest{VMID: req.VMID})
+				require.Equal(status.Code(err), codes.OK)
+
+				_, err = fcClient.StopVM(ctx, &proto.StopVMRequest{
+					VMID:           req.VMID,
+					TimeoutSeconds: 10,
+				})
+
+				assert.Contains(err.Error(), "VM is paused")
+			},
+		},
 	}
 
 	for _, test := range tests {

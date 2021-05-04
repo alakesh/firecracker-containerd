@@ -627,6 +627,16 @@ func (s *service) StopVM(requestCtx context.Context, request *proto.StopVMReques
 		timeout = time.Duration(request.TimeoutSeconds) * time.Second
 	}
 
+	info, err := s.machine.DescribeInstanceInfo(requestCtx)
+	if err != nil {
+		errors.Wrapf(err, "failed to get instance info %v", info)
+		return nil, err
+	}
+	if *info.State == models.InstanceInfoStatePaused {
+		s.logger.Debugf("Instance is paused, cannot stop VM %v", *info.State)
+		return nil, errors.Wrap(err, "VM is paused")
+	}
+
 	err = s.waitVMReady()
 	if err != nil {
 		return nil, err
