@@ -82,6 +82,11 @@ func (s *service) ResumeVM(ctx context.Context, req *proto.ResumeVMRequest) (*em
 	return s.local.ResumeVM(ctx, req)
 }
 
+func (s *service) CreateSnapshot(ctx context.Context, req *proto.CreateSnapshotRequest) (*empty.Empty, error) {
+	log.G(ctx).Debug("snapshot VM request: %+v", req)
+	return s.local.CreateSnapshot(ctx, req)
+}
+
 func (s *service) StopVM(ctx context.Context, req *proto.StopVMRequest) (*empty.Empty, error) {
 	log.G(ctx).Debugf("stop VM: %+v", req)
 	return s.local.StopVM(ctx, req)

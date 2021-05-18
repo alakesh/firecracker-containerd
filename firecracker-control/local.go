@@ -252,6 +252,24 @@ func (s *local) StopVM(requestCtx context.Context, req *proto.StopVMRequest) (*e
 	return resp, multierror.Append(shimErr, waitErr).ErrorOrNil()
 }
 
+// Creates snapshot of a VM
+func (s *local) CreateSnapshot(ctx context.Context, req *proto.CreateSnapshotRequest) (*empty.Empty, error) {
+	client, err := s.shimFirecrackerClient(ctx, req.VMID)
+	if err != nil {
+		return nil, err
+	}
+
+	defer client.Close()
+
+	resp, err := client.CreateSnapshot(ctx, req)
+	if err != nil {
+		s.logger.WithError(err).Error()
+		return nil, err
+	}
+
+	return resp, nil
+}
+
 // PauseVM pauses a VM
 func (s *local) PauseVM(ctx context.Context, req *proto.PauseVMRequest) (*empty.Empty, error) {
 	client, err := s.shimFirecrackerClient(ctx, req.VMID)

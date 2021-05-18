@@ -61,6 +61,11 @@ message StopVMRequest {
     string VMID = 1;
     uint32 TimeoutSeconds = 2;
 }
+message CreateSnapshotRequest {
+    string VMID = 1;
+    string memFilePath = 2;
+    string snapshotPath = 3;
+}
 
 message GetVMInfoRequest {
     string VMID = 1;

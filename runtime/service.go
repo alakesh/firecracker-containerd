@@ -656,6 +656,24 @@ func (s *service) ResumeVM(ctx context.Context, req *proto.ResumeVMRequest) (*em
 	return &empty.Empty{}, nil
 }
 
+//creates a snapshot of a VM
+func (s *service) CreateSnapshot(ctx context.Context, req *proto.CreateSnapshotRequest) (*empty.Empty, error) {
+	defer logPanicAndDie(s.logger)
+
+	err := s.waitVMReady()
+	if err != nil {
+		s.logger.WithError(err).Error()
+		return nil, err
+	}
+
+	if err := s.machine.CreateSnapshot(ctx, req.MemFilePath, req.SnapshotPath); err != nil {
+		s.logger.WithError(err).Error()
+		return nil, err
+	}
+
+	return &empty.Empty{}, nil
+}
+
 // PauseVM pauses a VM
 func (s *service) PauseVM(ctx context.Context, req *proto.PauseVMRequest) (*empty.Empty, error) {
 	defer logPanicAndDie(s.logger)
